@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Ubuntu', sans-serif;
+}
+
+body {
+    background-color: black;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+    font-size: 100vw;
+}
+
+.reduce-brightness-button {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    padding: 10px 15px;
+    background-color: black;
+    color: white;
+    border: 2px solid white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    opacity: 1 !important;
+}
+
+.increase-brightness-button {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    padding: 10px 15px;
+    background-color: black;
+    color: white;
+    border: 2px solid white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    opacity: 1 !important;
+}
+
+.dexcom-status-button {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    padding: 10px 15px;
+    background-color: black;
+    color: white;
+    border: 2px solid white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    opacity: 1 !important;
+}
+
+.time {
+    font-size: 11vw; /* 3rem for kindle */
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1vw;
+}
+
+#error {
+    font-size: 5vw;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.last-reading {
+    font-size: 11vw;
+    font-weight: bold;
+}
+
+.glucose {
+    font-size: 25vw;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    margin-top: -4vw;
+    margin-bottom: -4vw;;
+}
+
+.arrow {
+    font-size: 11vw;
+    margin-left: 2vw;
+}
+
+.mgdl {
+    font-size: 3vw;
+    margin-top: 0;
+}
+
+.mild {
+    color:darkkhaki;
+}
+
+.medium {
+    color:coral;
+}
+
+.hot {
+    color:crimson;
+}

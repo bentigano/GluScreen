@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GluScreen</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body id="body">
+    <button class="reduce-brightness-button" onclick="reduceBrightness();   return false;">-</button>
+    <button class="increase-brightness-button" onclick="increaseBrightness(); return false;">+</button>
+    <div class="time" id="time">99:99 PM</div>
+
+    <div id="error"></div>
+
+    <div class="content" id="content">
+        <div class="last-reading" id="last-reading">999 mins ago</div>
+        <div class="glucose">
+            <span id="glucose">999</span>
+            <span class="arrow" id="arrow">→</span>
+
+            <span class="arrow" id="difference">-999</span>
+        </div>
+        <div class="mgdl">mg/dL</div>
+    </div>
+
+    <button class="dexcom-status-button" onclick="launchDexcomStatusPage();   return false;">Dexcom Status</button>
+
+    <script src="script.js"></script>
+</body>
+</html>
