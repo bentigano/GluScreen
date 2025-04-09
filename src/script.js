@@ -7,10 +7,6 @@ var dexcomEmail = "";
 var dexcomPassword = "";
 var _dexcomAuthToken = null;
 
-function isKindle() {
-    return /Kindle|Silk/.test(navigator.userAgent);
-}
-
 function getCurrentTime() {
     const now = new Date();
     let hours = now.getHours();
@@ -198,7 +194,7 @@ async function fetchData() {
     updateReading();
     document.getElementById("time").innerText = getCurrentTime();
 
-    if (isKindle() || !timeIsNight()) {
+    if (!timeIsNight()) {
         setOpacity(20);
     } else {
         setOpacity(currentBackground / steps);
