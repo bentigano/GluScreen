@@ -236,6 +236,10 @@ function launchDexcomStatusPage() {
     window.open('https://status.dexcom.com/', '_blank', 'noopener, noreferrer');
 }
 
+function launchGithub() {
+    window.open('https://github.com/bentigano/GluScreen', '_blank', 'noopener, noreferrer');
+}
+
 function loadSettings() {
     if (localStorage.getItem(KEY_DEXCOM_USERNAME) !== null) {
         $('#dexcom-username').val(atob(localStorage.getItem(KEY_DEXCOM_USERNAME)));
