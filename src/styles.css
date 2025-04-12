@@ -8,6 +8,10 @@
     line-height: 1.1;
 }
 
+body {
+    background-color: black;
+}
+
 #main-display {
     background-color: black;
     color: white;
