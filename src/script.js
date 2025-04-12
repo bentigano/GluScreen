@@ -1,11 +1,13 @@
 const REFRESH_INTERVAL = 10; // in seconds
 
+const KEY_DEXCOM_USERNAME = "DEXCOM_USERNAME";
+const KEY_DEXCOM_PASSWORD = "DEXCOM_PASSWORD";
+const KEY_DEXCOM_TOKEN = "DEXCOM_TOKEN";
+
 var lastReadingTime;
 var nextReadingTime = 0; // default to some date in the past
-// hard-coding for now, will eventually be user-entered before go-live
-var dexcomEmail = "";
+var dexcomUsername = "";
 var dexcomPassword = "";
-var _dexcomAuthToken = null;
 
 function getCurrentTime() {
     const now = new Date();
@@ -46,12 +48,12 @@ function convertDexcomToDate(timeString) {
 
 async function getAuthToken(forceRefresh) {
 
-    if (forceRefresh || _dexcomAuthToken == null) {
+    if (forceRefresh || localStorage.getItem(KEY_DEXCOM_TOKEN) == null) {
         
         console.log("Refreshing Dexcom access token");
 
         const authRequest = {
-            accountName: dexcomEmail,
+            accountName: dexcomUsername,
             password: dexcomPassword,
             applicationId: "d89443d2-327c-4a6f-89e5-496bbb0317db"
         }
@@ -70,10 +72,10 @@ async function getAuthToken(forceRefresh) {
             throw new Error(`HTTP Error! Status: ${response.status}`);
         }
 
-        _dexcomAuthToken = await response.json();
+        localStorage.setItem(KEY_DEXCOM_TOKEN, await response.json());
         console.log("Dexcom auth token updated");
     }
-    return _dexcomAuthToken;
+    return localStorage.getItem(KEY_DEXCOM_TOKEN);
 }
 
 async function refreshDexcomReadings() {
@@ -82,7 +84,7 @@ async function refreshDexcomReadings() {
 
         await getAuthToken(false);
 
-        const response = await fetch(`https://share1.dexcom.com/ShareWebServices/Services/Publisher/ReadPublisherLatestGlucoseValues?sessionId=${_dexcomAuthToken}&minutes=1440&maxCount=2`, {
+        const response = await fetch(`https://share1.dexcom.com/ShareWebServices/Services/Publisher/ReadPublisherLatestGlucoseValues?sessionId=${localStorage.getItem(KEY_DEXCOM_TOKEN)}&minutes=1440&maxCount=2`, {
             method: "POST",
             headers: {
                 "Accept": "application/json"
@@ -118,6 +120,12 @@ async function refreshDexcomReadings() {
 }
 
 async function updateReading() {
+
+    if (dexcomUsername.length < 4 || dexcomPassword.length < 4) {
+        document.getElementById("error").innerText = "Missing Dexcom credentials - check Settings.";
+        return;
+    }
+
     try {
         // check if it's been more than 5 minutes since our last reading
         if (Date.now() > nextReadingTime) {
@@ -221,13 +229,41 @@ async function increaseBrightness() {
 }
 
 function setOpacity(opacity) {
-    document.getElementById("body").style.opacity = opacity;
+    document.getElementById("main-display").style.opacity = opacity;
 }
 
 function launchDexcomStatusPage() {
     window.open('https://status.dexcom.com/', '_blank', 'noopener, noreferrer');
 }
 
+function loadSettings() {
+    if (localStorage.getItem(KEY_DEXCOM_USERNAME) !== null) {
+        $('#dexcom-username').val(atob(localStorage.getItem(KEY_DEXCOM_USERNAME)));
+    }
+    if (localStorage.getItem(KEY_DEXCOM_PASSWORD) !== null) {
+        $('#dexcom-password').val(atob(localStorage.getItem(KEY_DEXCOM_PASSWORD)));
+    }
+}
+
+function clearSettings() {
+    localStorage.clear();
+    loadSettings();
+    $('#settingsPage').modal('hide');
+}
+
+function saveSettings() {
+    localStorage.setItem(KEY_DEXCOM_USERNAME, btoa($('#dexcom-username').val()));
+    localStorage.setItem(KEY_DEXCOM_PASSWORD, btoa($('#dexcom-password').val()));
+    initializeSettings();
+    $('#settingsPage').modal('hide');
+}
+
+function initializeSettings() {
+    dexcomUsername = atob(localStorage.getItem(KEY_DEXCOM_USERNAME));
+    dexcomPassword = atob(localStorage.getItem(KEY_DEXCOM_PASSWORD));
+}
+
 // Run immediately, then refresh based on an interval
+initializeSettings();
 fetchData();
 setInterval(fetchData, REFRESH_INTERVAL * 1000);
