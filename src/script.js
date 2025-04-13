@@ -1,8 +1,10 @@
 const REFRESH_INTERVAL = 10; // in seconds
+const BRIGHTNESS_STEPS = 20; // Number of brightness steps (max brightness)
 
 const KEY_DEXCOM_USERNAME = "DEXCOM_USERNAME";
 const KEY_DEXCOM_PASSWORD = "DEXCOM_PASSWORD";
 const KEY_DEXCOM_TOKEN = "DEXCOM_TOKEN";
+const KEY_NIGHT_BRIGHTNESS = "NIGHT_BRIGHTNESS";
 
 var lastReadingTime;
 var nextReadingTime = 0; // default to some date in the past
@@ -203,32 +205,32 @@ async function fetchData() {
     document.getElementById("time").innerText = getCurrentTime();
 
     if (!timeIsNight()) {
-        setOpacity(20);
+        setOpacity(BRIGHTNESS_STEPS);
     } else {
-        setOpacity(currentBackground / steps);
+        setOpacity(localStorage.getItem(KEY_NIGHT_BRIGHTNESS));
     }
 }
 
-let currentBackground = 20;
-let steps = 20; // Number of steps
-
 function reduceBrightness() {
-    if (currentBackground <= 2) return;
-
-    currentBackground--;
-
-    setOpacity(currentBackground / steps);
+    var currentBrightness = localStorage.getItem(KEY_NIGHT_BRIGHTNESS);
+    if (currentBrightness <= 2) return;
+    
+    currentBrightness--;
+    localStorage.setItem(KEY_NIGHT_BRIGHTNESS, currentBrightness);
+    setOpacity(currentBrightness);
 }
 
 async function increaseBrightness() {
-    if (currentBackground >= 20) return;
+    var currentBrightness = localStorage.getItem(KEY_NIGHT_BRIGHTNESS);
+    if (currentBrightness >= 20) return;
 
-    currentBackground++;
-
-    setOpacity(currentBackground / steps);
+    currentBrightness++;
+    localStorage.setItem(KEY_NIGHT_BRIGHTNESS, currentBrightness);
+    setOpacity(currentBrightness);
 }
 
-function setOpacity(opacity) {
+function setOpacity(brightnessLevel) {
+    opacity = brightnessLevel / BRIGHTNESS_STEPS;
     document.getElementById("main-display").style.opacity = opacity;
 }
 
@@ -247,6 +249,9 @@ function loadSettings() {
     if (localStorage.getItem(KEY_DEXCOM_PASSWORD) !== null) {
         $('#dexcom-password').val(atob(localStorage.getItem(KEY_DEXCOM_PASSWORD)));
     }
+    $('#rangeNightBrightness').val(localStorage.getItem(KEY_NIGHT_BRIGHTNESS));
+
+    initializeSettings();
 }
 
 function clearSettings() {
@@ -258,6 +263,7 @@ function clearSettings() {
 function saveSettings() {
     localStorage.setItem(KEY_DEXCOM_USERNAME, btoa($('#dexcom-username').val()));
     localStorage.setItem(KEY_DEXCOM_PASSWORD, btoa($('#dexcom-password').val()));
+    localStorage.setItem(KEY_NIGHT_BRIGHTNESS, $('#rangeNightBrightness').val());
     initializeSettings();
     $('#settingsPage').modal('hide');
 }
@@ -265,6 +271,11 @@ function saveSettings() {
 function initializeSettings() {
     dexcomUsername = atob(localStorage.getItem(KEY_DEXCOM_USERNAME));
     dexcomPassword = atob(localStorage.getItem(KEY_DEXCOM_PASSWORD));
+    
+    if (localStorage.getItem(KEY_NIGHT_BRIGHTNESS) === null) {
+        localStorage.setItem(KEY_NIGHT_BRIGHTNESS, 20);
+    }
+    setOpacity(localStorage.getItem(KEY_NIGHT_BRIGHTNESS));
 }
 
 // Run immediately, then refresh based on an interval
