@@ -32,6 +32,10 @@ Google Analytics is used **ONLY** for tracking page views. Dexcom credentials an
 1. Repeat on each device you want to use as a private CGM dashboard
 1. Enjoy!
 
+You'll likely need to configure your device so that the screen never turns off. While this is usually a simple process, it varies depending on your device.
+ - For most Apple devices, you can use `Settings > Display & Brightness > Auto-Lock` and change it to `Never`
+ - For other devices, search online for `prevent {insert device name here} from sleeping` and fill in the name of your device. Find a reputable website and follow the instructions
+
 ## 👤 About the Author
 
 This project was created by the father of a  **type 1 diabetic**, driven by a personal need for a simple, private way to view CGM data without compromising security or relying on big tech ecosystems. While other companies offer similar products, the reliability and responsiveness weren't meeting my needs or my budget - insulin, CGM's, and pumps are expensive enough.
