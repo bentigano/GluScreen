@@ -205,25 +205,25 @@ async function updateReading() {
             var trend = data[0].Trend;
             switch (trend) {
                 case "DoubleUp":
-                    trend = "⇈";
+                    trend = "⇈\uFE0E";
                     break;
                 case "SingleUp":
-                    trend = "↑";
+                    trend = "↑\uFE0E";
                     break;
                 case "FortyFiveUp":
-                    trend = "↗";
+                    trend = "↗\uFE0E";
                     break;
                 case "Flat":
-                    trend = "→";
+                    trend = "→\uFE0E";
                     break;
                 case "FortyFiveDown":
-                    trend = "↘";
+                    trend = "↘\uFE0E";
                     break;
                 case "SingleDown":
-                    trend = "↓";
+                    trend = "↓\uFE0E";
                     break;
                 case "DoubleDown":
-                    trend = "⇊";
+                    trend = "⇊\uFE0E";
                     break;
                 default:
                     trend = "&nbsp;&nbsp;&nbsp;";
