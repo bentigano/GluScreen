@@ -1,57 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-      <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1J2TXTH76X"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-1J2TXTH76X"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
 
-      gtag('config', 'G-1J2TXTH76X');
-    </script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GluScreen</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="styles.css" />
+    gtag('config', 'G-1J2TXTH76X');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GluScreen</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
-    <div id="main-display">
-        <button class="reduce-brightness-button" onclick="reduceBrightness(); return false;"><i class="bi bi-brightness-high"></i></button>
-        <button class="increase-brightness-button" onclick="increaseBrightness(); return false;"><i class="bi bi-brightness-high-fill"></i></button>
-        <button class="launch-settings-button" data-toggle="modal" data-target="#settingsPage" onclick="loadSettings(); return false;"><i class="bi bi-gear"></i></button>
-        <div class="time" id="time">99:99 PM</div>
+  <div id="main-display">
+    <button class="reduce-brightness-button" onclick="reduceBrightness(); return false;"><i
+        class="bi bi-brightness-high"></i></button>
+    <button class="increase-brightness-button" onclick="increaseBrightness(); return false;"><i
+        class="bi bi-brightness-high-fill"></i></button>
+    <button class="launch-settings-button" data-toggle="modal" data-target="#settingsPage"
+      onclick="loadSettings(); return false;"><i class="bi bi-gear"></i></button>
+    <div class="time" id="time">99:99 PM</div>
 
-        <div id="error"></div>
+    <div id="error"></div>
 
-        <div class="content" id="content">
-            <div class="last-reading" id="last-reading">999 mins ago</div>
-            <div class="glucose">
-                <span id="glucose">999</span>
-                <span class="arrow" id="arrow">→</span>
+    <div class="content" id="content">
+      <div class="last-reading" id="last-reading">999 mins ago</div>
+      <div class="glucose">
+        <span id="glucose">999</span>
+        <span class="arrow" id="arrow">→</span>
 
-                <span class="arrow" id="difference">-999</span>
-            </div>
-            <div class="mgdl">mg/dL</div>
-        </div>
-
-        <button class="source-button" onclick="launchGithub();   return false;"><i class="bi bi-github"></i> Source Code</button>
-        <button class="dexcom-status-button" onclick="launchDexcomStatusPage();   return false;"><i class="bi bi-activity"></i> Dexcom Status</button>
-
+        <span class="arrow" id="difference">-999</span>
+      </div>
+      <div class="mgdl">mg/dL</div>
     </div>
 
-    <div class="modal fade" id="settingsPage" tabindex="-1" role="dialog" aria-labelledby="settingsPageLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="settingsPageLabel"><i class="bi bi-gear"></i> GluScreen Settings</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
+    <button class="source-button" onclick="launchGithub();   return false;"><i class="bi bi-github"></i> Source
+      Code</button>
+    <button class="dexcom-status-button" onclick="launchDexcomStatusPage();   return false;"><i
+        class="bi bi-activity"></i> Dexcom Status</button>
+
+  </div>
+
+  <div class="modal fade" id="settingsPage" tabindex="-1" role="dialog" aria-labelledby="settingsPageLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="settingsPageLabel"><i class="bi bi-gear"></i> GluScreen Settings</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- modal navigation -->
+          <ul class="nav nav-tabs" id="modalTab" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" id="tabSettings-tab" data-toggle="tab" href="#tabSettings" role="tab">Settings</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="tabLog-tab" data-toggle="tab" href="#tabLog" role="tab">Log</a>
+            </li>
+          </ul>
+          <div class="tab-content mt-3">
+            <div class="tab-pane fade show active" id="tabSettings" role="tabpanel">
               <form>
                 <div class="form-group">
                   <label for="dexcom-username" class="col-form-label">Dexcom Username:</label>
@@ -62,23 +81,52 @@
                   <input type="password" class="form-control" id="dexcom-password"></textarea>
                 </div>
                 <div class="form-group">
-                <label for="rangeBrightness" class="form-label">Night Brightness (8pm - 7am)</label>
-                <input type="range" class="form-range" id="rangeNightBrightness" min="2" max="20">
-              </div>
+                  <label for="rangeBrightness" class="form-label">Night Brightness (8pm - 7am)</label>
+                  <input type="range" class="form-range" id="rangeNightBrightness" min="2" max="20">
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="chkEnableLogging">
+                  <label class="form-check-label" for="chkEnableLogging">
+                    Enable Debug Logging
+                  </label>
+                </div>
               </form>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="bi bi-x"></i> Cancel</button>
-              <button type="button" class="btn btn-secondary" onclick="clearSettings(); return false;"><i class="bi bi-trash"></i> Clear</button>
-              <button type="button" class="btn btn-primary" onclick="saveSettings(); return false;"><i class="bi bi-floppy"></i> Save Settings</button>
+            <div class="tab-pane fade" id="tabLog" role="tabpanel">
+              <table class="table table-striped table-sm" id="tblLog">
+                <thead>
+                  <tr>
+                    <th scope="col">Timestamp</th>
+                    <th scope="col">Message</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="bi bi-x"></i> Cancel</button>
+          <button type="button" class="btn btn-secondary" onclick="clearSettings(); return false;"><i
+              class="bi bi-trash"></i> Clear</button>
+          <button type="button" class="btn btn-primary" onclick="saveSettings(); return false;"><i
+              class="bi bi-floppy"></i> Save Settings</button>
+        </div>
       </div>
+    </div>
+  </div>
 
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    <script src="script.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+  <script src="script.js"></script>
 </body>
+
 </html>

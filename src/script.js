@@ -5,19 +5,25 @@ const KEY_DEXCOM_USERNAME = "DEXCOM_USERNAME";
 const KEY_DEXCOM_PASSWORD = "DEXCOM_PASSWORD";
 const KEY_DEXCOM_TOKEN = "DEXCOM_TOKEN";
 const KEY_NIGHT_BRIGHTNESS = "NIGHT_BRIGHTNESS";
+const KEY_ENABLE_LOGGING = "ENABLE_LOGGING";
 
 var lastReadingTime;
 var nextReadingTime = 0; // default to some date in the past
 var dexcomUsername = "";
 var dexcomPassword = "";
 
-function getCurrentTime() {
+function getCurrentTime(withSeconds) {
     const now = new Date();
     let hours = now.getHours();
     const minutes = now.getMinutes().toString().padStart(2, "0");
+    const seconds = now.getSeconds().toString().padStart(2, "0");
     const ampm = hours >= 12 ? "PM" : "AM";
     hours = hours % 12 || 12; // Convert 24-hour time to 12-hour format
-    return `${hours}:${minutes} ${ampm}`; 
+    if (withSeconds) {
+        return `${hours}:${minutes}:${seconds} ${ampm}`;
+    } else {
+        return `${hours}:${minutes} ${ampm}`;
+    }
 }
 
 function timeIsNight() {
@@ -29,10 +35,10 @@ function timeIsNight() {
 function timeDifference(timeString) {
     const givenTime = new Date(timeString);
     const currentTime = new Date();
-    
+
     // Difference in milliseconds
     const diffMs = currentTime - givenTime;
-    
+
     // Convert to minutes
     const diffMinutes = Math.floor(diffMs / (1000 * 60));
 
@@ -42,7 +48,7 @@ function timeDifference(timeString) {
 function convertDexcomToDate(timeString) {
     const match = timeString.match(/Date\((\d+)\)/);
     if (!match) {
-    throw new Error("Invalid date format");
+        throw new Error("Invalid date format");
     }
 
     return parseInt(match[1]);
@@ -51,8 +57,8 @@ function convertDexcomToDate(timeString) {
 async function getAuthToken(forceRefresh) {
 
     if (forceRefresh || localStorage.getItem(KEY_DEXCOM_TOKEN) == null) {
-        
-        console.log("Refreshing Dexcom access token");
+
+        logDebug("Refreshing Dexcom access token");
 
         const authRequest = {
             accountName: dexcomUsername,
@@ -71,18 +77,19 @@ async function getAuthToken(forceRefresh) {
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP Error! Status: ${response.status}`);
+            logError(`Error updating auth token. Dexcom Response: ${response.status}`);
+            return;
         }
 
         localStorage.setItem(KEY_DEXCOM_TOKEN, await response.json());
-        console.log("Dexcom auth token updated");
+        logDebug("Dexcom auth token updated");
     }
     return localStorage.getItem(KEY_DEXCOM_TOKEN);
 }
 
 async function refreshDexcomReadings() {
     try {
-        console.log("Refreshing values from Dexcom");
+        logDebug("Refreshing values from Dexcom");
 
         await getAuthToken(false);
 
@@ -103,11 +110,12 @@ async function refreshDexcomReadings() {
                     }
                 }
                 catch (error) {
-                    console.error("Error fetching glucose value:", error);
+                    logError(`Error fetching glucose value: ${error}`);
                     document.getElementById("error").innerText = error;
                 }
             } else {
-                throw new Error(`HTTP Error! Status: ${response.status}`);
+                logError(`Error refreshing Dexcom readings. Dexcom Response: ${response.status}`);
+                return;
             }
         }
 
@@ -115,7 +123,7 @@ async function refreshDexcomReadings() {
 
     }
     catch (error) {
-        console.error("Error fetching glucose value:", error);
+        logError(`Error fetching glucose value: ${error}`);
         document.getElementById("error").innerText = error;
     }
     return null;
@@ -124,6 +132,7 @@ async function refreshDexcomReadings() {
 async function updateReading() {
 
     if (dexcomUsername.length < 4 || dexcomPassword.length < 4) {
+        logError("Missing Dexcom credentials - check Settings.");
         document.getElementById("error").innerText = "Missing Dexcom credentials - check Settings.";
         return;
     }
@@ -131,12 +140,12 @@ async function updateReading() {
     try {
         // check if it's been more than 5 minutes since our last reading
         if (Date.now() > nextReadingTime) {
-
+            logDebug("Attempting to get updated readings from Dexcom");
             const data = await refreshDexcomReadings();
 
             lastReadingTime = convertDexcomToDate(data[0].WT);
             nextReadingTime = convertDexcomToDate(data[0].WT) + ((5 * 60 + 15) * 1000);
-            console.log(`Next reading should be at ${new Date(nextReadingTime).toString()}`)
+            logDebug(`Next reading should be at ${new Date(nextReadingTime).toString()}`)
 
             if (data[0].Value > 0) {
                 document.getElementById("glucose").innerText = data[0].Value;
@@ -195,14 +204,14 @@ async function updateReading() {
 
         document.getElementById("error").innerText = "";
     } catch (error) {
-        console.error("Error fetching glucose value:", error);
+        logError(`Error fetching glucose value: ${error}`);
         document.getElementById("error").innerText = error;
     }
 }
 
 async function fetchData() {
     updateReading();
-    document.getElementById("time").innerText = getCurrentTime();
+    document.getElementById("time").innerText = getCurrentTime(false);
 
     if (!timeIsNight()) {
         setOpacity(BRIGHTNESS_STEPS);
@@ -214,8 +223,9 @@ async function fetchData() {
 function reduceBrightness() {
     var currentBrightness = localStorage.getItem(KEY_NIGHT_BRIGHTNESS);
     if (currentBrightness <= 2) return;
-    
+
     currentBrightness--;
+    logDebug(`Brightness reduced to ${(currentBrightness / BRIGHTNESS_STEPS) * 100}`);
     localStorage.setItem(KEY_NIGHT_BRIGHTNESS, currentBrightness);
     setOpacity(currentBrightness);
 }
@@ -225,6 +235,7 @@ async function increaseBrightness() {
     if (currentBrightness >= 20) return;
 
     currentBrightness++;
+    logDebug(`Brightness increased to ${(currentBrightness / BRIGHTNESS_STEPS) * 100}`);
     localStorage.setItem(KEY_NIGHT_BRIGHTNESS, currentBrightness);
     setOpacity(currentBrightness);
 }
@@ -235,10 +246,12 @@ function setOpacity(brightnessLevel) {
 }
 
 function launchDexcomStatusPage() {
+    logDebug("Launching Dexcom Status Page link");
     window.open('https://status.dexcom.com/', '_blank', 'noopener, noreferrer');
 }
 
 function launchGithub() {
+    logDebug("Launching Github link");
     window.open('https://github.com/bentigano/GluScreen', '_blank', 'noopener, noreferrer');
 }
 
@@ -251,11 +264,16 @@ function loadSettings() {
     }
     $('#rangeNightBrightness').val(localStorage.getItem(KEY_NIGHT_BRIGHTNESS));
 
+    if (localStorage.getItem(KEY_ENABLE_LOGGING) == "true") {
+        $('#chkEnableLogging').prop('checked', true);
+    }
+
     initializeSettings();
 }
 
 function clearSettings() {
     localStorage.clear();
+    logDebug("Settings cleared");
     loadSettings();
     $('#settingsPage').modal('hide');
 }
@@ -264,18 +282,38 @@ function saveSettings() {
     localStorage.setItem(KEY_DEXCOM_USERNAME, btoa($('#dexcom-username').val()));
     localStorage.setItem(KEY_DEXCOM_PASSWORD, btoa($('#dexcom-password').val()));
     localStorage.setItem(KEY_NIGHT_BRIGHTNESS, $('#rangeNightBrightness').val());
+    localStorage.setItem(KEY_ENABLE_LOGGING, $('#chkEnableLogging').is(":checked"));
+    logDebug("Settings saved");
     initializeSettings();
     $('#settingsPage').modal('hide');
 }
 
 function initializeSettings() {
+    logDebug("Initializing settings");
     dexcomUsername = atob(localStorage.getItem(KEY_DEXCOM_USERNAME));
     dexcomPassword = atob(localStorage.getItem(KEY_DEXCOM_PASSWORD));
-    
+
     if (localStorage.getItem(KEY_NIGHT_BRIGHTNESS) === null) {
+        logDebug("Brightness setting not set. Defaulting to 100%");
         localStorage.setItem(KEY_NIGHT_BRIGHTNESS, 20);
     }
+    if (localStorage.getItem(KEY_ENABLE_LOGGING) === null) {
+        logDebug("Logging setting not set. Defaulting to false");
+        localStorage.setItem(KEY_ENABLE_LOGGING, false);
+    }
     setOpacity(localStorage.getItem(KEY_NIGHT_BRIGHTNESS));
+}
+
+function logError(message) {
+    console.error(message);
+}
+
+function logDebug(message) {
+    if (localStorage.getItem(KEY_ENABLE_LOGGING)) {
+        let timestamp = getCurrentTime(true);
+        console.log(`${timestamp} - ${message}`);
+        $("#tblLog tbody").prepend(`<tr class="table-info"><td>${timestamp}</td><td>${message}</td></tr>`);
+    }
 }
 
 // Run immediately, then refresh based on an interval
