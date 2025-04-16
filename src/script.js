@@ -12,6 +12,36 @@ var nextReadingTime = 0; // default to some date in the past
 var dexcomUsername = "";
 var dexcomPassword = "";
 
+function logError(message) {
+    let timestamp = getCurrentTime(true);
+    console.error(`${timestamp} - ${message}`);
+    $("#tblLog tbody").prepend(`<tr class="table-info"><td>${timestamp}</td><td>${message}</td></tr>`);
+}
+
+function logDebug(message) {
+    if (localStorage.getItem(KEY_ENABLE_LOGGING)) {
+        let timestamp = getCurrentTime(true);
+        console.log(`${timestamp} - ${message}`);
+        $("#tblLog tbody").prepend(`<tr class="table-info"><td>${timestamp}</td><td>${message}</td></tr>`);
+    }
+}
+
+async function checkInternetConnection() {
+    try {
+      const response = await fetch("https://clients3.google.com/generate_204", {
+        method: "GET",
+        mode: "no-cors", // This avoids CORS errors, though response details are limited
+        cache: "no-cache"
+      });
+  
+      // If the fetch didn't throw, we likely have internet
+      return true;
+    } catch (error) {
+      // If the fetch fails, assume no internet
+      return false;
+    }
+  }
+
 function getCurrentTime(withSeconds) {
     const now = new Date();
     let hours = now.getHours();
@@ -56,6 +86,12 @@ function convertDexcomToDate(timeString) {
 
 async function getAuthToken(forceRefresh) {
 
+    if (!await checkInternetConnection() || !navigator.onLine) {
+        let error = "No internet - check connection.";
+        logError(error);
+        document.getElementById("error").innerText = error;
+        return;
+    }
     if (forceRefresh || localStorage.getItem(KEY_DEXCOM_TOKEN) == null) {
 
         logDebug("Refreshing Dexcom access token");
@@ -89,7 +125,14 @@ async function getAuthToken(forceRefresh) {
 
 async function refreshDexcomReadings() {
     try {
-        logDebug("Refreshing values from Dexcom");
+        if (!await checkInternetConnection() || !navigator.onLine) {
+            let error = "No internet - check connection.";
+            logError(error);
+            document.getElementById("error").innerText = error;
+            return;
+        }
+
+        logDebug("Attempting to get updated readings from Dexcom");
 
         await getAuthToken(false);
 
@@ -140,8 +183,13 @@ async function updateReading() {
     try {
         // check if it's been more than 5 minutes since our last reading
         if (Date.now() > nextReadingTime) {
-            logDebug("Attempting to get updated readings from Dexcom");
+            
             const data = await refreshDexcomReadings();
+
+            if (data === undefined) {
+                logError("No data received from Dexcom - see previous errors.");
+                return;
+            }
 
             lastReadingTime = convertDexcomToDate(data[0].WT);
             nextReadingTime = convertDexcomToDate(data[0].WT) + ((5 * 60 + 15) * 1000);
@@ -304,17 +352,6 @@ function initializeSettings() {
     setOpacity(localStorage.getItem(KEY_NIGHT_BRIGHTNESS));
 }
 
-function logError(message) {
-    console.error(message);
-}
-
-function logDebug(message) {
-    if (localStorage.getItem(KEY_ENABLE_LOGGING)) {
-        let timestamp = getCurrentTime(true);
-        console.log(`${timestamp} - ${message}`);
-        $("#tblLog tbody").prepend(`<tr class="table-info"><td>${timestamp}</td><td>${message}</td></tr>`);
-    }
-}
 
 // Run immediately, then refresh based on an interval
 initializeSettings();
