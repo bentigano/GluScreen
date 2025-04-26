@@ -147,7 +147,7 @@ async function refreshDexcomReadings() {
             if (response.status == 500) {
                 try {
                     const errorResponse = await response.json();
-                    if (errorResponse.Code == "SessionNotValid") {
+                    if (errorResponse.Code == "SessionNotValid" || errorResponse.Code == "SessionIdNotFound") {
                         await getAuthToken(true);
                         return;
                     }
@@ -192,8 +192,16 @@ async function updateReading() {
             }
 
             lastReadingTime = convertDexcomToDate(data[0].WT);
-            nextReadingTime = convertDexcomToDate(data[0].WT) + ((5 * 60 + 15) * 1000);
-            logDebug(`Next reading should be at ${new Date(nextReadingTime).toString()}`)
+
+            // if the last reading from Dexcom is more than 5m30s seconds old, wait 5 minutes from now
+            if (Date.now() > lastReadingTime + ((5 * 60) + 30) * 1000) {
+                logDebug(`Last reading from Dexcom is stale: ${new Date(lastReadingTime).toString()}`)
+                nextReadingTime = Date.now() + ((5 * 60) * 1000);
+                logDebug(`Next reading should be at ${new Date(nextReadingTime).toString()}`)
+            } else {
+                nextReadingTime = convertDexcomToDate(data[0].WT) + ((5 * 60 + 15) * 1000);
+                logDebug(`Next reading should be at ${new Date(nextReadingTime).toString()}`)
+            }
 
             if (data[0].Value > 0) {
                 document.getElementById("glucose").innerText = data[0].Value;
@@ -236,7 +244,7 @@ async function updateReading() {
             var differenceElement = document.getElementById("difference");
             differenceElement.innerText = difference >= 0 ? `+${difference}` : difference;
 
-        }
+        } // end try
         var timeDiff = timeDifference(lastReadingTime);
         if (timeDiff < 1) {
             document.getElementById("last-reading").innerText = "just now"
