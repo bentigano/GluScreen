@@ -16,6 +16,7 @@ function logError(message) {
     let timestamp = getCurrentTime(true);
     console.error(`${timestamp} - ${message}`);
     $("#tblLog tbody").prepend(`<tr class="table-info"><td>${timestamp}</td><td>${message}</td></tr>`);
+    pruneOldTableRows();
 }
 
 function logDebug(message) {
@@ -23,6 +24,19 @@ function logDebug(message) {
         let timestamp = getCurrentTime(true);
         console.log(`${timestamp} - ${message}`);
         $("#tblLog tbody").prepend(`<tr class="table-info"><td>${timestamp}</td><td>${message}</td></tr>`);
+        pruneOldTableRows();
+    }
+}
+
+// remove old rows from the log table (only allow 100 rows)
+function pruneOldTableRows() {
+    const maxRows = 100
+    var $table = $("#tblLog");
+    var $rows = $table.find('tbody tr');
+
+    if ($rows.length > maxRows) {
+        var rowsToRemove = $rows.length - maxRows;
+        $rows.slice(-rowsToRemove).remove();
     }
 }
 
