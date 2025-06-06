@@ -49,9 +49,43 @@
 
   </div>
 
+  <div class="modal fade" id="welcomePage" tabindex="-1" role="dialog" aria-labelledby="welcomePageLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="welcomePageLabel"><i class="bi bi-arrow-down-up"></i> Welcome to GluScreen!</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>GluScreen is a lightweight, privacy-focused web application that displays real-time Dexcom Continuous Glucose Monitor (CGM) readings on a screen or tablet — ideal for bedside tables, kitchen counters, wall-mount tablets, or desk setups. Perfect for old iPads or Kindles that don't run other apps well.</p>
+          <h5>Features</h5>
+          📊 Real-time CGM data display for Dexcom<br/>
+          💻 Optimized for all devices, including older tablets<br/>
+          🔒 Local-only for maximum privacy<br/>
+          🌙 Customizable brightness for comfortable viewing<br/>
+          🔄 Auto-refresh every 5 minutes<br/>
+          📱 Responsive UI for all screen sizes<br/>
+          <br/>
+          <p>Click <b>Get Started</b> below to navigate to the Settings page and enter your Dexcom credentials.</p>
+
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="bi bi-x"></i> Cancel</button>
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#settingsPage"
+      onclick="loadSettings(); $('#welcomePage').modal('hide'); return false;"><i
+              class="bi bi-gear"></i> Get Started</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="modal fade" id="settingsPage" tabindex="-1" role="dialog" aria-labelledby="settingsPageLabel"
     aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="settingsPageLabel"><i class="bi bi-gear"></i> GluScreen Settings</h5>

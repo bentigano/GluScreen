@@ -188,7 +188,7 @@ async function refreshDexcomReadings() {
 
 async function updateReading() {
 
-    if (dexcomUsername.length < 4 || dexcomPassword.length < 4) {
+    if (dexcomUsername == null || dexcomUsername.length < 4 || dexcomPassword == null || dexcomPassword.length < 4) {
         logError("Missing Dexcom credentials - check Settings.");
         document.getElementById("error").innerText = "Missing Dexcom credentials - check Settings.";
         return;
@@ -362,6 +362,18 @@ function initializeSettings() {
     logDebug("Initializing settings");
     dexcomUsername = atob(localStorage.getItem(KEY_DEXCOM_USERNAME));
     dexcomPassword = atob(localStorage.getItem(KEY_DEXCOM_PASSWORD));
+
+    if (localStorage.getItem(KEY_DEXCOM_USERNAME) == null) {
+        dexcomUsername = null;
+    }
+
+    if (localStorage.getItem(KEY_DEXCOM_PASSWORD) == null) {
+        dexcomPassword = null;
+    }
+
+    if (dexcomUsername == null || dexcomPassword == null) {
+        $('#welcomePage').modal('show');
+    }
 
     if (localStorage.getItem(KEY_NIGHT_BRIGHTNESS) === null) {
         logDebug("Brightness setting not set. Defaulting to 100%");
