@@ -27,19 +27,19 @@
         class="bi bi-brightness-high-fill"></i></button>
     <button class="launch-settings-button" data-toggle="modal" data-target="#settingsPage"
       onclick="loadSettings(); return false;"><i class="bi bi-gear"></i></button>
-    <div class="time" id="time">99:99 PM</div>
+    <div class="time" id="time"></div>
 
     <div id="error"></div>
 
     <div class="content" id="content">
-      <div class="last-reading" id="last-reading">999 mins ago</div>
+      <div class="last-reading" id="last-reading"></div>
       <div class="glucose">
-        <span id="glucose">999</span>
-        <span class="arrow" id="arrow">→</span>
+        <span id="glucose"></span>
+        <span class="arrow" id="arrow"></span>
 
-        <span class="arrow" id="difference">-999</span>
+        <span class="arrow" id="difference"></span>
       </div>
-      <div class="mgdl">mg/dL</div>
+      <div class="mgdl" id="mgdl"></div>
     </div>
 
     <button class="source-button" onclick="launchGithub();   return false;"><i class="bi bi-github"></i> Source

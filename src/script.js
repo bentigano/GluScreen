@@ -128,10 +128,19 @@ async function getAuthToken(forceRefresh) {
 
         if (!response.ok) {
             logError(`Error updating auth token. Dexcom Response: ${response.status}`);
+            localStorage.removeItem(KEY_DEXCOM_TOKEN);
             return;
         }
 
-        localStorage.setItem(KEY_DEXCOM_TOKEN, await response.json());
+        let authToken = await response.json();
+
+        if (authToken == "00000000-0000-0000-0000-000000000000") {
+            logError(`Error updating auth token. Invalid auth token received.`);
+            localStorage.removeItem(KEY_DEXCOM_TOKEN);
+            return;
+        }
+
+        localStorage.setItem(KEY_DEXCOM_TOKEN, authToken);
         logDebug("Dexcom auth token updated");
     }
     return localStorage.getItem(KEY_DEXCOM_TOKEN);
@@ -149,6 +158,13 @@ async function refreshDexcomReadings() {
         logDebug("Attempting to get updated readings from Dexcom");
 
         await getAuthToken(false);
+
+        if (localStorage.getItem(KEY_DEXCOM_TOKEN) === null) {
+            let authTokenError = `No auth token - check credentials.`;
+            logError(authTokenError);
+            document.getElementById("error").innerText = authTokenError;
+            return null;
+        }
 
         const response = await fetch(`https://share1.dexcom.com/ShareWebServices/Services/Publisher/ReadPublisherLatestGlucoseValues?sessionId=${localStorage.getItem(KEY_DEXCOM_TOKEN)}&minutes=1440&maxCount=2`, {
             method: "POST",
@@ -200,7 +216,7 @@ async function updateReading() {
             
             const data = await refreshDexcomReadings();
 
-            if (data === undefined) {
+            if (data === null || data === undefined) {
                 logError("No data received from Dexcom - see previous errors.");
                 return;
             }
@@ -219,8 +235,10 @@ async function updateReading() {
 
             if (data[0].Value > 0) {
                 document.getElementById("glucose").innerText = data[0].Value;
+                document.getElementById("mgdl").innerText = "mg/dL"
             } else {
                 document.getElementById("glucose").innerText = "???";
+                document.getElementById("mgdl").innerText = ""
             }
 
             // update trend
@@ -351,10 +369,13 @@ function clearSettings() {
 function saveSettings() {
     localStorage.setItem(KEY_DEXCOM_USERNAME, btoa($('#dexcom-username').val()));
     localStorage.setItem(KEY_DEXCOM_PASSWORD, btoa($('#dexcom-password').val()));
+    localStorage.removeItem(KEY_DEXCOM_TOKEN); // clear the auth token when username/password is being updated
     localStorage.setItem(KEY_NIGHT_BRIGHTNESS, $('#rangeNightBrightness').val());
     localStorage.setItem(KEY_ENABLE_LOGGING, $('#chkEnableLogging').is(":checked"));
     logDebug("Settings saved");
     initializeSettings();
+    nextReadingTime = 0; // this will force an update
+    fetchData();
     $('#settingsPage').modal('hide');
 }
 
