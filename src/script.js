@@ -98,6 +98,26 @@ function convertDexcomToDate(timeString) {
     return parseInt(match[1]);
 }
 
+// grab the last reading that is more than 4 minutes older than the most recent reading
+function calculateLastReading(data) {
+    const parsed = data.map(d => ({
+    ...d,
+    WTms: parseInt(d.WT.match(/\d+/)[0])
+    }));
+
+    // sort oldest to newest
+    parsed.sort((a, b) => b.WTms - a.WTms);
+
+    // get the newest reading time
+    const newest = parsed[0].WTms;
+
+    // find the next WT more than 4 minutes (240,000 ms) older
+    const fourMinutes = 4 * 60 * 1000;
+    const nextOlder = parsed.find(d => newest - d.WTms > fourMinutes);
+
+    return nextOlder.Value;
+}
+
 async function getAuthToken(forceRefresh) {
 
     if (!await checkInternetConnection() || !navigator.onLine) {
@@ -166,7 +186,7 @@ async function refreshDexcomReadings() {
             return null;
         }
 
-        const response = await fetch(`https://share1.dexcom.com/ShareWebServices/Services/Publisher/ReadPublisherLatestGlucoseValues?sessionId=${localStorage.getItem(KEY_DEXCOM_TOKEN)}&minutes=1440&maxCount=2`, {
+        const response = await fetch(`https://share1.dexcom.com/ShareWebServices/Services/Publisher/ReadPublisherLatestGlucoseValues?sessionId=${localStorage.getItem(KEY_DEXCOM_TOKEN)}&minutes=1440&maxCount=4`, {
             method: "POST",
             headers: {
                 "Accept": "application/json"
@@ -219,6 +239,8 @@ async function updateReading() {
             if (data === null || data === undefined) {
                 logError("No data received from Dexcom - see previous errors.");
                 return;
+            } else {
+                logDebug(JSON.stringify(data));
             }
 
             lastReadingTime = convertDexcomToDate(data[0].WT);
@@ -272,7 +294,7 @@ async function updateReading() {
             document.getElementById("arrow").innerHTML = trend;
 
             // update difference from last number
-            var difference = data[0].Value - data[1].Value
+            var difference = data[0].Value - calculateLastReading(data);
             var differenceElement = document.getElementById("difference");
             differenceElement.innerText = difference >= 0 ? `+${difference}` : difference;
 
