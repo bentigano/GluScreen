@@ -1,5 +1,7 @@
 const REFRESH_INTERVAL = 10; // in seconds
 const BRIGHTNESS_STEPS = 20; // Number of brightness steps (max brightness)
+const FOUR_MINUTES = 4 * 60 * 1000;
+const TWO_MINUTES = 2 * 60 * 1000;
 
 const KEY_DEXCOM_USERNAME = "DEXCOM_USERNAME";
 const KEY_DEXCOM_PASSWORD = "DEXCOM_PASSWORD";
@@ -112,10 +114,28 @@ function calculateLastReading(data) {
     const newest = parsed[0].WTms;
 
     // find the next WT more than 4 minutes (240,000 ms) older
-    const fourMinutes = 4 * 60 * 1000;
-    const nextOlder = parsed.find(d => newest - d.WTms > fourMinutes);
+    
+    const nextOlder = parsed.find(d => newest - d.WTms > FOUR_MINUTES);
 
     return nextOlder.Value;
+}
+
+// grab the newest reading unless the second reading is withing 2 minutes of the newest (grab the second instead)
+function calculateMostRecentReadingTime(data) {
+    const parsed = data.map(d => ({
+    ...d,
+    WTms: parseInt(d.WT.match(/\d+/)[0])
+    }));
+
+    // sort oldest to newest
+    parsed.sort((a, b) => b.WTms - a.WTms);
+
+    // find the most recent reading, or the reading within 2 minutes before that
+    // this resolves issues where more than 1 device is reporting data (such as phone and watch)
+    if (parsed.length > 1 && parsed[0].WTms - parsed[1].WTms < TWO_MINUTES)
+        return parsed[1].WTms;
+    else
+        return parsed[0].WTms;
 }
 
 async function getAuthToken(forceRefresh) {
@@ -243,7 +263,7 @@ async function updateReading() {
                 logDebug(JSON.stringify(data));
             }
 
-            lastReadingTime = convertDexcomToDate(data[0].WT);
+            lastReadingTime = calculateMostRecentReadingTime(data);
 
             // if the last reading from Dexcom is more than 5m30s seconds old, wait 5 minutes from now
             if (Date.now() > lastReadingTime + ((5 * 60) + 30) * 1000) {
@@ -251,7 +271,7 @@ async function updateReading() {
                 nextReadingTime = Date.now() + ((5 * 60) * 1000);
                 logDebug(`Next reading should be at ${new Date(nextReadingTime).toString()}`)
             } else {
-                nextReadingTime = convertDexcomToDate(data[0].WT) + ((5 * 60 + 15) * 1000);
+                nextReadingTime = lastReadingTime + ((5 * 60 + 15) * 1000);
                 logDebug(`Next reading should be at ${new Date(nextReadingTime).toString()}`)
             }
 
