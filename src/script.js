@@ -454,3 +454,30 @@ function initializeSettings() {
 initializeSettings();
 fetchData();
 setInterval(fetchData, REFRESH_INTERVAL * 1000);
+
+// daily refresh of page (to get new features, etc.)
+(function scheduleDailyReload(targetHour, targetMinute) {
+    function getNextReloadTime() {
+        const now = new Date();
+        const next = new Date();
+
+        next.setHours(targetHour, targetMinute, 0, 0);
+
+        // If we've already passed today's target time, schedule for tomorrow
+        if (now >= next) {
+            next.setDate(next.getDate() + 1);
+        }
+
+        return next - now; // milliseconds until reload
+    }
+
+    const delay = getNextReloadTime();
+
+    logDebug("Next reload in", Math.round(delay / 1000 / 60), "minutes");
+
+    setTimeout(() => {
+        // Force reload from server (bypass cache)
+        window.location.reload(true);
+    }, delay);
+
+})(3,0); // <-- reload page at 3:00am (local browser time)
