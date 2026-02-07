@@ -391,7 +391,7 @@ async function updateReading() {
                     nextReadingTime2 = Date.now() + ((5 * 60) * 1000);
                     logDebug(`Follower 2: Next reading should be at ${new Date(nextReadingTime2).toString()}`)
                 } else {
-                    nextReadingTime2 = lastReadingTime1 + ((5 * 60 + 15) * 1000);
+                    nextReadingTime2 = lastReadingTime2 + ((5 * 60 + 15) * 1000);
                     logDebug(`Follower 2: Next reading should be at ${new Date(nextReadingTime2).toString()}`)
                 }
 
