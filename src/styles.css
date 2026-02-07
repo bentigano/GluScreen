@@ -106,7 +106,7 @@ body {
     margin-bottom: 1vw;
 }
 
-#error {
+#error1, #error2 {
     font-size: 5vw;
 }
 

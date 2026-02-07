@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-1J2TXTH76X"></script>
@@ -29,17 +30,32 @@
       onclick="loadSettings(); return false;"><i class="bi bi-gear"></i></button>
     <div class="time" id="time"></div>
 
-    <div id="error"></div>
+    <div id="follower1">
+      <div id="error1"></div>
+      <div class="content" id="content1">
+        <div class="last-reading" id="last-reading1"></div>
+        <div class="glucose">
+          <span id="glucose1"></span>
+          <span class="arrow" id="arrow1"></span>
 
-    <div class="content" id="content">
-      <div class="last-reading" id="last-reading"></div>
-      <div class="glucose">
-        <span id="glucose"></span>
-        <span class="arrow" id="arrow"></span>
-
-        <span class="arrow" id="difference"></span>
+          <span class="arrow" id="difference1"></span>
+        </div>
+        <div class="mgdl" id="mgdl1"></div>
       </div>
-      <div class="mgdl" id="mgdl"></div>
+    </div>
+
+    <div id="follower2" style="display: none;">
+      <div id="error2"></div>
+      <div class="content" id="content2">
+        <div class="last-reading" id="last-reading2"></div>
+        <div class="glucose">
+          <span id="glucose2"></span>
+          <span class="arrow" id="arrow2"></span>
+
+          <span class="arrow" id="difference2"></span>
+        </div>
+        <div class="mgdl" id="mgdl2"></div>
+      </div>
     </div>
 
     <button class="source-button" onclick="launchGithub();   return false;"><i class="bi bi-github"></i> Source
@@ -60,15 +76,17 @@
           </button>
         </div>
         <div class="modal-body">
-          <p>GluScreen is a lightweight, privacy-focused web application that displays real-time Dexcom Continuous Glucose Monitor (CGM) readings on a screen or tablet — ideal for bedside tables, kitchen counters, wall-mount tablets, or desk setups. Perfect for old iPads or Kindles that don't run other apps well.</p>
+          <p>GluScreen is a lightweight, privacy-focused web application that displays real-time Dexcom Continuous
+            Glucose Monitor (CGM) readings on a screen or tablet — ideal for bedside tables, kitchen counters,
+            wall-mount tablets, or desk setups. Perfect for old iPads or Kindles that don't run other apps well.</p>
           <h5>Features</h5>
-          📊 Real-time CGM data display for Dexcom<br/>
-          💻 Optimized for all devices, including older tablets<br/>
-          🔒 Local-only for maximum privacy<br/>
-          🌙 Customizable brightness for comfortable viewing<br/>
-          🔄 Auto-refresh every 5 minutes<br/>
-          📱 Responsive UI for all screen sizes<br/>
-          <br/>
+          📊 Real-time CGM data display for Dexcom<br />
+          💻 Optimized for all devices, including older tablets<br />
+          🔒 Local-only for maximum privacy<br />
+          🌙 Customizable brightness for comfortable viewing<br />
+          🔄 Auto-refresh every 5 minutes<br />
+          📱 Responsive UI for all screen sizes<br />
+          <br />
           <p>Click <b>Get Started</b> below to navigate to the Settings page and enter your Dexcom credentials.</p>
 
 
@@ -76,8 +94,8 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="bi bi-x"></i> Cancel</button>
           <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#settingsPage"
-      onclick="loadSettings(); $('#welcomePage').modal('hide'); return false;"><i
-              class="bi bi-gear"></i> Get Started</button>
+            onclick="loadSettings(); $('#welcomePage').modal('hide'); return false;"><i class="bi bi-gear"></i> Get
+            Started</button>
         </div>
       </div>
     </div>
@@ -97,7 +115,8 @@
           <!-- modal navigation -->
           <ul class="nav nav-tabs" id="modalTab" role="tablist">
             <li class="nav-item">
-              <a class="nav-link active" id="tabSettings-tab" data-toggle="tab" href="#tabSettings" role="tab">Settings</a>
+              <a class="nav-link active" id="tabSettings-tab" data-toggle="tab" href="#tabSettings"
+                role="tab">Settings</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" id="tabLog-tab" data-toggle="tab" href="#tabLog" role="tab">Log</a>
@@ -107,12 +126,30 @@
             <div class="tab-pane fade show active" id="tabSettings" role="tabpanel">
               <form>
                 <div class="form-group">
-                  <label for="dexcom-username" class="col-form-label">Dexcom Username:</label>
-                  <input type="text" class="form-control" id="dexcom-username">
+                  <label for="dexcom-username1" class="col-form-label">Dexcom Username:</label>
+                  <input type="text" class="form-control" id="dexcom-username1">
                 </div>
                 <div class="form-group">
-                  <label for="dexcom-password" class="col-form-label">Dexcom Password:</label>
-                  <input type="password" class="form-control" id="dexcom-password"></textarea>
+                  <label for="dexcom-password1" class="col-form-label">Dexcom Password:</label>
+                  <input type="password" class="form-control" id="dexcom-password1"></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="colorPicker1" class="col-form-label">Color:</label>
+                  <input type="color" id="colorPicker1" value="#FFFFFF">
+                </div>
+                <small id="additionalFollowerHelp" class="form-text text-muted">Complete the next three fields ONLY if you want to
+                  display readings for two followers.</small>
+                <div class="form-group">
+                  <label for="dexcom-username2" class="col-form-label">Additional Dexcom Username:</label>
+                  <input type="text" class="form-control" id="dexcom-username2">
+                </div>
+                <div class="form-group">
+                  <label for="dexcom-password2" class="col-form-label">Additional Dexcom Password:</label>
+                  <input type="password" class="form-control" id="dexcom-password2"></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="colorPicker2" class="col-form-label">Additional Color:</label>
+                  <input type="color" id="colorPicker2" value="#FFFFFF">
                 </div>
                 <div class="form-group">
                   <label for="rangeBrightness" class="form-label">Night Brightness (8pm - 7am)</label>
