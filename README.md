@@ -6,7 +6,7 @@ A lightweight, privacy-focused web application that displays real-time Dexcom Co
 
 ## 🛡️ Why Privacy Matters
 
-Unlike many third-party apps, **GluScreen** does **not** send your data to the cloud or third-party servers. All data is retrieved and displayed **locally** in your browser. Your glucose data stays **yours** and goes directly from Dexcom to your device.
+Unlike many third-party apps, **GluScreen** does **not** send your data to the cloud or third-party servers. All data is retrieved from Dexcom and displayed **locally** in your browser. Your glucose data stays **yours** and goes directly from Dexcom to your device.
 
 ## 🚀 Features
 
@@ -16,6 +16,7 @@ Unlike many third-party apps, **GluScreen** does **not** send your data to the c
 - 🌙 Customizable brightness for comfortable viewing
 - 🔄 Auto-refresh every 5 minutes
 - 📱 Responsive UI for all screen sizes
+- 2️⃣ Supports two Dexcom accounts simultaneously
 
 ## 🛠️ How It Works
 
@@ -24,6 +25,8 @@ Unlike many third-party apps, **GluScreen** does **not** send your data to the c
 Data is processed right in your browser and displayed in a simple, easy-to-read dashboard.
 
 Google Analytics is used **ONLY** for tracking page views. Dexcom credentials and CGM data **NEVER** leave your browser window.
+
+**GluScreen** also supports multiple Dexcom accounts. By entering in additional credentials, GluScreen will alternate between the CGM readings of each account every few seconds. Be sure to select a unique color for each set of credentials to differentiate between the readings.
 
 ## 📦 Setup
 
